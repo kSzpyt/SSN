@@ -49,7 +49,7 @@ outs <- NULL
 proportion <- 0.95 # Set to 0.995 for LOOCV
 #train <- train[-c(4, 5, 6, 8)]
 # Crossvalidate, go!
-train <- train[1:100,]
+#train <- train
 for(i in 1:k)
 {
   index <- sample(1:nrow(train), round(proportion*nrow(train)))
