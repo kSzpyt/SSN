@@ -30,9 +30,8 @@ n <- names(train)
 f <- as.formula(paste("K + R + C ~", paste(n[!n %in% c("K", "R", "C")], collapse = " + ")))
 f
 
-
 set.seed(500)
-k <- 5
+k <- 10
 outs <- NULL
 proportion <- 0.75 
 
@@ -44,7 +43,7 @@ for(i in 1:k)
   test_cv <- train[-index, ]
   nn_cv <- neuralnet(f,
                      data = train_cv,
-                     hidden = c(3, 2),
+                     hidden = c(8),
                      act.fct = "logistic",
                      linear.output = FALSE,
                      stepmax = 10^7)
