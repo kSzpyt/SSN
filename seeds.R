@@ -42,7 +42,7 @@ proportion <- 0.75
 outs <- NULL
 
 
-fun <- function(x, fct = "logistic")
+foo <- function(x, fct = "logistic")
 {
   
   for(i in 1:6)
@@ -70,14 +70,14 @@ fun <- function(x, fct = "logistic")
   return(a)
 }
 
-fun(c(4, 3, 2), "logistic")
+foo(c(4, 3, 2), "logistic")
 
 # d <- NULL
 # for (i in 1:10) {
-#   d[i] <- fun(i, "logistic")
+#   d[i] <- foo(i, "logistic")
 # }
 # d
-# fun(5)
+# foo(5)
 # plot(nn_cv)
 # 
 # foo <- function(i){
@@ -91,7 +91,7 @@ fun(c(4, 3, 2), "logistic")
 
 k <- NULL
 for (x in 1:100) {
-  k[x] <- fun(x)
+  k[x] <- foo(x)
 }
 k
 plot(k, type = "l")
@@ -100,9 +100,40 @@ which(k == max(k))
 k <- NULL
 kk <- expand.grid(1:5, 1:5)
 for (x in 1:100) {
-  k[x] <- fun(as.numeric(kk[x,]))
+  k[x] <- foo(as.numeric(kk[x,]))
 }
 k
+
+
+
+
+
+config3 <- rbind(c(3, 2, 1),
+                 c(4, 5, 6),
+                 c(2, 6 ,4),
+                 c(12, 54, 1))
+
+
+
+
+config <- function(y)
+{
+  a <- NULL
+  for (x in 1:dim(y)[1]) {
+    a[x] <- foo(y[x,])
+  }
+  return(a)
+}
+
+config(config3)
+
+
+
+
+
+
+
+
 
 
 tree <- rpart(label ~ ., data, method = "class")
