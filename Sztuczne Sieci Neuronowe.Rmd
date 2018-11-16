@@ -73,6 +73,6 @@ foo <- function(x = c(3, 4), fct = "logistic", n = 6)
 ```
 
 ```{r}
-xd(c(4,3))
+foo(c(4,3))
 ```
 
