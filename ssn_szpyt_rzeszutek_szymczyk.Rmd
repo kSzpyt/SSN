@@ -21,7 +21,7 @@ library(RColorBrewer)
 ##Opis danych
 Nasze dane opierają się na pomiarach właściwości geometrycznych nasion (ziaren) należących do trzech różnych odmian pszenicy. Do skonstruowania wszystkich siedmiu atrybutów o rzeczywistych wartościach zostały wykorzystana technika rentgenowska.
   
-  Badaną grupę stanowiły ziarna należące do trzech różnych odmian pszenicy: Kama, Rosa i Canadian, każda po 70 elementów, losowo wybranych do eksperymentu. Wysokiej jakości wizualizacja wewnętrznej struktury nasiona została wykryta za pomocą techniki rentgenowskiej. Jest ona nieniszcząca (dla nasion) i znacznie tańsza niż inne, bardziej wyrafinowane techniki obrazowania, takie jak np. technologia laserowa. Obrazy rejestrowano na płytach rentgenowskich KODAK o wymiarach: 13x18 cm. Badania przeprowadzono przy użyciu ziaren pszenicy zebranych z pól doświadczalnych, zbadanych w Instytucie Agrofizyki Polskiej Akademii Nauk w Lublinie.Zestaw danych można wykorzystać do zadań klasyfikacji i analizy skupień(grupowania).
+  Badaną grupę stanowiły ziarna należące do trzech różnych odmian pszenicy: **Kama**, **Rosa** i **Canadian**, każda po 70 elementów, losowo wybranych do eksperymentu. Wysokiej jakości wizualizacja wewnętrznej struktury nasiona została wykryta za pomocą techniki rentgenowskiej. Jest ona nieniszcząca (dla nasion) i znacznie tańsza niż inne, bardziej wyrafinowane techniki obrazowania, takie jak np. technologia laserowa. Obrazy rejestrowano na płytach rentgenowskich KODAK o wymiarach: 13x18 cm. Badania przeprowadzono przy użyciu ziaren pszenicy zebranych z pól doświadczalnych, zbadanych w Instytucie Agrofizyki Polskiej Akademii Nauk w Lublinie.Zestaw danych można wykorzystać do zadań klasyfikacji i analizy skupień(grupowania).
 
   
   Aby skonstruować dane, zmierzono siedem parametrów geometrycznych ziarna pszenicy. Atrybuty:
@@ -33,6 +33,7 @@ Nasze dane opierają się na pomiarach właściwości geometrycznych nasion (zia
 5.	Szerokość ziarna,
 6.	Współczynnik asymetrii,
 7.	Długość rowka ziarna.
+8.  Zmienna label mówiąca o typie pszenicy (1, 2, 3)
 Wszystkie z powyższych parametrów były wartościowane w sposób ciągły.
 
 Następnie wczytujemy dane, na których będziemy pracować
@@ -200,18 +201,17 @@ w5 <- kk
 w5
 ```
 ##Skuteczność.
-(to przy pierwszym spr skuteczności po funkcji foo)
-Przy domyślnych parametrach skuteczność sieci wynosi 90%. Jest to wysoki poziom, jednak zobaczymy, czy zwiększy się on przy zmianie neuronów lub warstw.
-(po zmianie neuronow)
+Przy domyślnych parametrach skuteczność sieci wynosi 90%. Jest to wysoki poziom, jednak zobaczymy, czy zwiększy się on przy zmianie neuronów lub warstw.  
+Jedna warstwa.   
 Przy jednej warstwie ukrytej i liczbie neuronów od 1 do 100, zauważamy wzrost skuteczności do 92,95%. 
-(zmiana liczby neuronow na dwóch warst)
-Skuteczność waha się pomiędzy 76%, które jest najniższym wynikiem, a 92,1%. 
-(3 warstwy)
-Analogiczna sytacja, jednak dla 3 warstw. Najniższa skuteczność to 74,1%, a najwyższa to 91,43%. 
-(4 warstwy)
-Analogiczna sytuacja, 4 warstwy. Najniższa skuteczność 87,81%, a najwyższa to 91,33%.
-(5 warstw)
-Analogiczna sytuacja, 5 warstw. Najniższa skuteczność 84,1%, a najwyższa to 90,86%.  
+Dwie warstwy. 
+Dla dWóch warstw skuteczność waha się pomiędzy 76%, które jest najniższym wynikiem, a 92,1%.   
+Trzy warstwy.  
+Analogiczna sytacja, jednak dla 3 warstw. Najniższa skuteczność to 74,1%, a najwyższa to 91,43%.  
+Cztery warstwy.  
+Analogiczna sytuacja, 4 warstwy. Najniższa skuteczność 87,81%, a najwyższa to 91,33%.   
+Pięc warstw.  
+Analogiczna sytuacja, 5 warstw. Najniższa skuteczność 84,1%, a najwyższa to 90,86%.   
   
 ##Drzewo decyzyjne
 Poniżej wyświetlone jest drzewo decyzyjne.
