@@ -4,7 +4,10 @@ author: "Karol Szpyt"
 date: "16 listopada 2018"
 output: html_document
 ---
-Tematem projektu jest budowa sieci neuronowej.  OPIS!!!!!!!!!!!!!!!!!
+##Wstęp
+Opis problemu:
+Tematem projektu jest budowa sztucznej sieci neuronowej. W naszym projekcie przeprowadzimy również badania dotyczące jej działania. 
+Pierwszą czynnością będzie wybór danych. W naszym przypadku jest to zbiór obserwacji dotyczący trzech rodzajów ziaren pszenicy.
 
 Ładujemy potrzebne biblioteki
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
@@ -15,12 +18,13 @@ library(rattle)
 library(rpart.plot)
 library(RColorBrewer)
 ```
-Nasze dane opierają się na pomiarach właściwości geometrycznych nasion (ziaren) należących do trzech różnych odmian pszenicy. Do skonstruowania wszystkich siedmiu atrybutów o rzeczywistych wartościach zostały wykorzystane technika rentgenowska i pakiet GRAINS. 
-Informacje o zestawie danych:
-Badaną grupę stanowiły ziarna należące do trzech różnych odmian pszenicy: Kama, Rosa i Canadian, każda po 70 elementów, losowo wybranych do eksperymentu. Wysokiej jakości wizualizacja wewnętrznej struktury nasiona została wykryta za pomocą techniki rentgenowskiej. Jest ona nieniszcząca (dla nasion) i znacznie tańsza niż inne, bardziej wyrafinowane techniki obrazowania, takie jak np. technologia laserowa. Obrazy rejestrowano na płytach rentgenowskich KODAK o wymiarach: 13x18 cm. Badania przeprowadzono przy użyciu ziaren pszenicy zebranych z pól doświadczalnych, zbadanych w Instytucie Agrofizyki Polskiej Akademii Nauk w Lublinie.
-Zestaw danych można wykorzystać do zadań klasyfikacji i analizy skupień(grupowania).
+##Opis danych
+Nasze dane opierają się na pomiarach właściwości geometrycznych nasion (ziaren) należących do trzech różnych odmian pszenicy. Do skonstruowania wszystkich siedmiu atrybutów o rzeczywistych wartościach zostały wykorzystana technika rentgenowska.
+  
+  Badaną grupę stanowiły ziarna należące do trzech różnych odmian pszenicy: Kama, Rosa i Canadian, każda po 70 elementów, losowo wybranych do eksperymentu. Wysokiej jakości wizualizacja wewnętrznej struktury nasiona została wykryta za pomocą techniki rentgenowskiej. Jest ona nieniszcząca (dla nasion) i znacznie tańsza niż inne, bardziej wyrafinowane techniki obrazowania, takie jak np. technologia laserowa. Obrazy rejestrowano na płytach rentgenowskich KODAK o wymiarach: 13x18 cm. Badania przeprowadzono przy użyciu ziaren pszenicy zebranych z pól doświadczalnych, zbadanych w Instytucie Agrofizyki Polskiej Akademii Nauk w Lublinie.Zestaw danych można wykorzystać do zadań klasyfikacji i analizy skupień(grupowania).
 
-Aby skonstruować dane, zmierzono siedem parametrów geometrycznych ziarna pszenicy. Atrybuty:
+  
+  Aby skonstruować dane, zmierzono siedem parametrów geometrycznych ziarna pszenicy. Atrybuty:
 
 1.	Obszar A,
 2.	Obwód B,
@@ -179,13 +183,7 @@ names(kk) <- c("1st", "2nd", "3nd", "4th", "5th", "skuteczność")
 w5 <- kk
 w5
 ```
-
-
-
-
-
-
-
+Poniżej wyświetlone jest drzewo decyzyjne
 ```{r, fig.align='center'}
 tree <- rpart(label ~ ., data, method = "class")
 fancyRpartPlot(tree)
