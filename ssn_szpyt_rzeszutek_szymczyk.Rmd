@@ -45,40 +45,46 @@ names(data) <- c("area_A",
 )
 ```
 
-Rozdzielamy zmienną"label" na 3 zmienne binarne i standaryzujemy dane, aby były wartościami od 0 do 1. Następnie dbamy o wymieszanie naszych danych, aby się nie powtarzały. Kolejnym krokiem jest utworzenie formuły do wykorzystanie funkcji *neuralnet*
+Rozdzielamy zmienną "label" na 3 zmienne binarne i standaryzujemy dane, aby były wartościami od 0 do 1.  
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
 #Rozdzielanie zmiennej "label"
-train <- cbind(data[, 1:7], class.ind(as.factor(data$label)))
-names(train) <- c(names(data)[1:7],"K", "R", "C")
+data2 <- cbind(data[, 1:7], class.ind(as.factor(data$label)))
+names(data2) <- c(names(data)[1:7],"K", "R", "C")
 
 #Standaryzacja danych, aby były wartościami od 0 do 1 
-maximum<-apply(train[,1:7], 2, max)
-minimum<-apply(train[,1:7], 2, min)
-train2 <- as.data.frame(scale(train[, 1:7], center = minimum,scale=maximum-minimum))
-train <- cbind(train2, train[,8:10])
-
+maximum<-apply(data2[,1:7], 2, max)
+minimum<-apply(data2[,1:7], 2, min)
+data3 <- as.data.frame(scale(data2[, 1:7], center = minimum,scale=maximum-minimum))
+data2 <- cbind(data3, data2[,8:10])
+```
+Następnie dbamy o wymieszanie naszych danych.
+```{r}
 #Powodujemy wymieszanie danych
-train <- train[sample(1:210, 210),]
-
+data2 <- data2[sample(1:210, 210),]
+```
+Kolejnym krokiem jest utworzenie formuły do wykorzystanie funkcji *neuralnet*.
+```{r}
 #tworzymy formułę
-n <- names(train)
+n <- names(data2)
 f <- as.formula(paste("K + R + C ~", paste(n[!n %in% c("K", "R", "C")], collapse = " + ")))
 f
+```
+
+```{r include=FALSE}
 outs <- NULL
 ```
 
-Kolejnym krokiem jest stworzenie funkcji *foo*, która tworzy sieć, a następnie każdorazowo sprawdza jej skuteczność. Za każdym razem tworzy również sieci, działające na innych danych trenujących/testowych (walidacja krzyżowa). Domyślnie dana funkcja posiada 3 neurony w pierwszej warstwie i 4 neurony w drugiej warstwie. Walidacja krzyżowa zawsze będzie w proporcjach **dane trenujące : dane testowe** (n - 1) : 1. Domyślnie jest to proporcja 5:1. 
-  
-  Funkcja *foo* pozwala nam na zmianę parametrów takich jak liczba neuronów, funkcja aktywacji.
+
+Funkcja **foo** przyjmuje nastęujące argumenty: **x** wektor, który w zależności od wymiarów oraz wartości ustawi liczbę ukrytych warst oraz liczbę neuronów w poszeczególnych warstwach. Domyślnie funkcja przyjmuje 3 neurony w pierwszej warstwie i 4 neurony w drugiej warstwie. **fct** zmienna typu character ustawia funckję aktywacji (domyślnie "logistic"). Argument **n** dotyczy walidacji krzyżowej. Walidacja wykonywana będzie zawsze w proporcjach **dane trenujące : dane testowe** (n - 1) : 1. Domyślnie jest to proporcja 5:1. Funkcja zwraca średnią skuteczność wyliczoną dzięki walidacji krzyżowej.
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
 foo <- function(x = c(3, 4), fct = "logistic", n = 6)
 {
   #walidacja krzyżowa
   for(i in 1:n)
   {
-    index <- (((i-1) * round((1/n)*nrow(train))) + 1):((i*round((1/n) * nrow(train))))
-    train_cv <- train[index, ]
-    test_cv <- train[-index, ]
+    index <- (((i-1) * round((1/n)*nrow(data2))) + 1):((i*round((1/n) * nrow(data2))))
+    train_cv <- data2[index, ]
+    test_cv <- data2[-index, ]
     nn_cv <- neuralnet(f,
                        data = train_cv,
                        hidden = x,
@@ -103,7 +109,7 @@ Sprawdźmy skuteczność naszej sieci przy domyślnych parametrach
 foo()
 ```
 
-funkcja obliczająca skutecznosć sieci w zależności od konfiguracji neuronów
+funkcja obliczająca skutecznosć sieci w zależności od konfiguracji neuronów. Argument **y** jest tym samym argumentem co argument **x** w funckji **foo**, jednakże funckja **config** zwraca wektor skuteczności dla kolejnych kombinacji neuronóW.
 ```{r}
 config <- function(y)
 {
@@ -113,20 +119,23 @@ config <- function(y)
   }
   return(a)
 }
-
 ```
 
-maksik dla jednej warstwy
+Sprawdzamy skuteczność sieci z jedną warstwą ukrytą. Liczba neuronóW zmienia się od 1 do 100.
 ```{r}
 k <- NULL
 for (x in 1:100) {
   k[x] <- foo(x)
 }
-k
-plot(k, type = "l")
-which(k == max(k))
+a <- c(which(k == max(k)), max(k))
+names(a) <- c("liczba neuronów", "skuteczność")
+a
 ```
-dla dwoch warst 
+```{r}
+plot(k, type = "l")
+```
+
+Sprawdzamy teraz zachowanie sieci przy zmianie liczby neuronów na dwóch warstwach. Z uwagi na bardzo dużą ilość kombinacji (w szczególości w następnych warstwach) liczba neuronóW na każdej z warst wahać się będzie pomiędzy 1 a 25. Ponadto wybrane zostanie losowo 10 kombinacji i na tych 10 kombinacjach sprawdzona zostanie skuteczność sieci
 ```{r}
 kk <- expand.grid(1:25, 1:25)
 ii <- sample(1:dim(kk)[1], 10)
@@ -134,9 +143,10 @@ kk <- kk[ii,]
 kk <- cbind(kk, config(kk))
 rownames(kk) <- 1:10
 names(kk) <- c("1st", "2nd", "skuteczność")
-kk
+w2 <- kk
+w2
 ```
-dla trzech warst
+Ta sama sytuacja co powyżej aczkolwiek dla trzech warst
 ```{r}
 kk <- expand.grid(1:25, 1:25, 1:25)
 ii <- sample(1:dim(kk)[1], 10)
@@ -144,9 +154,10 @@ kk <- kk[ii,]
 kk <- cbind(kk, config(kk))
 rownames(kk) <- 1:10
 names(kk) <- c("1st", "2nd", "3nd", "skuteczność")
-kk
+w3 <- kk
+w3
 ```
-dla czterech warst
+Dla czterech
 ```{r}
 kk <- expand.grid(1:25, 1:25, 1:25, 1:25)
 ii <- sample(1:dim(kk)[1], 10)
@@ -154,9 +165,10 @@ kk <- kk[ii,]
 kk <- cbind(kk, config(kk))
 rownames(kk) <- 1:10
 names(kk) <- c("1st", "2nd", "3nd", "4th", "skuteczność")
-kk
+w4 <- kk
+w4
 ```
-dla pięciu warst
+Oraz pięciu
 ```{r}
 kk <- expand.grid(1:25, 1:25, 1:25, 1:25, 1:25)
 ii <- sample(1:dim(kk)[1], 10)
@@ -164,7 +176,8 @@ kk <- kk[ii,]
 kk <- cbind(kk, config(kk))
 rownames(kk) <- 1:10
 names(kk) <- c("1st", "2nd", "3nd", "4th", "5th", "skuteczność")
-kk
+w5 <- kk
+w5
 ```
 
 
