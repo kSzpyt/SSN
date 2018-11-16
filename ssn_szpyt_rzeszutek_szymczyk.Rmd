@@ -1,6 +1,6 @@
 ---
 title: "Sztuczne Sieci Neuronowe"
-author: "Karol Szpyt"
+author: "Karol Szpyt, Katarzyna Rzeszutek, Agnieszka Szymczyk"
 date: "16 listopada 2018"
 output: html_document
 ---
@@ -100,6 +100,7 @@ Funkcja **foo** przyjmuje nastęujące argumenty: **x** wektor, który w zależn
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
 foo <- function(x = c(3, 4), fct = "logistic", n = 6)
 {
+  set.seed(500)
   #walidacja krzyżowa
   for(i in 1:n)
   {
@@ -148,6 +149,7 @@ k <- NULL
 for (x in 1:100) {
   k[x] <- foo(x)
 }
+a <- NULL
 a <- c(which(k == max(k)), max(k))
 names(a) <- c("liczba neuronów", "skuteczność")
 a
@@ -158,6 +160,7 @@ plot(k, type = "l")
 
 Sprawdzamy teraz zachowanie sieci przy zmianie liczby neuronów na dwóch warstwach. Z uwagi na bardzo dużą ilość kombinacji (w szczególości w następnych warstwach) liczba neuronóW na każdej z warst wahać się będzie pomiędzy 1 a 25. Ponadto wybrane zostanie losowo 10 kombinacji i na tych 10 kombinacjach sprawdzona zostanie skuteczność sieci
 ```{r}
+set.seed(500)
 kk <- expand.grid(1:25, 1:25)
 ii <- sample(1:dim(kk)[1], 10)
 kk <- kk[ii,]
@@ -169,6 +172,7 @@ w2
 ```
 Ta sama sytuacja co powyżej aczkolwiek dla trzech warst
 ```{r}
+set.seed(500)
 kk <- expand.grid(1:25, 1:25, 1:25)
 ii <- sample(1:dim(kk)[1], 10)
 kk <- kk[ii,]
@@ -180,6 +184,7 @@ w3
 ```
 Dla czterech
 ```{r}
+set.seed(500)
 kk <- expand.grid(1:25, 1:25, 1:25, 1:25)
 ii <- sample(1:dim(kk)[1], 10)
 kk <- kk[ii,]
@@ -191,6 +196,7 @@ w4
 ```
 Oraz pięciu
 ```{r}
+set.seed(500)
 kk <- expand.grid(1:25, 1:25, 1:25, 1:25, 1:25)
 ii <- sample(1:dim(kk)[1], 10)
 kk <- kk[ii,]
@@ -205,7 +211,7 @@ Przy domyślnych parametrach skuteczność sieci wynosi 90%. Jest to wysoki pozi
 Jedna warstwa.   
 Przy jednej warstwie ukrytej i liczbie neuronów od 1 do 100, zauważamy wzrost skuteczności do 92,95%. 
 Dwie warstwy. 
-Dla dWóch warstw skuteczność waha się pomiędzy 76%, które jest najniższym wynikiem, a 92,1%.   
+Dla dwóch warstw skuteczność waha się pomiędzy 76%, które jest najniższym wynikiem, a 92,1%.   
 Trzy warstwy.  
 Analogiczna sytacja, jednak dla 3 warstw. Najniższa skuteczność to 74,1%, a najwyższa to 91,43%.  
 Cztery warstwy.  
