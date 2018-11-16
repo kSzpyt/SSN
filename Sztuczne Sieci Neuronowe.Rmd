@@ -10,9 +10,26 @@ Tematem projektu jest budowa sieci neuronowej.  OPIS!!!!!!!!!!!!!!!!!
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
 library(neuralnet)
 library(nnet)
-library(ggplot2)
+library(rpart)
+library(rattle)
+library(rpart.plot)
+library(RColorBrewer)
 ```
-tutaj opis danych AGI!!!!!!!!!!!!!!!!!!
+Nasze dane opierają się na pomiarach właściwości geometrycznych nasion (ziaren) należących do trzech różnych odmian pszenicy. Do skonstruowania wszystkich siedmiu atrybutów o rzeczywistych wartościach zostały wykorzystane technika rentgenowska i pakiet GRAINS. 
+Informacje o zestawie danych:
+Badaną grupę stanowiły ziarna należące do trzech różnych odmian pszenicy: Kama, Rosa i Canadian, każda po 70 elementów, losowo wybranych do eksperymentu. Wysokiej jakości wizualizacja wewnętrznej struktury nasiona została wykryta za pomocą techniki rentgenowskiej. Jest ona nieniszcząca (dla nasion) i znacznie tańsza niż inne, bardziej wyrafinowane techniki obrazowania, takie jak np. technologia laserowa. Obrazy rejestrowano na płytach rentgenowskich KODAK o wymiarach: 13x18 cm. Badania przeprowadzono przy użyciu ziaren pszenicy zebranych z pól doświadczalnych, zbadanych w Instytucie Agrofizyki Polskiej Akademii Nauk w Lublinie.
+Zestaw danych można wykorzystać do zadań klasyfikacji i analizy skupień(grupowania).
+
+Aby skonstruować dane, zmierzono siedem parametrów geometrycznych ziarna pszenicy. Atrybuty:
+
+1.	Obszar A,
+2.	Obwód B,
+3.	Zwartość C = 4 \*\ pi \*\ A / P ^ 2,
+4.	Długość ziarna,
+5.	Szerokość ziarna,
+6.	Współczynnik asymetrii,
+7.	Długość rowka ziarna.
+Wszystkie z powyższych parametrów były wartościowane w sposób ciągły.
 
 Następnie wczytujemy dane, na których będziemy pracować
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
@@ -88,7 +105,7 @@ foo()
 
 
 
-```{r}
+```{r, fig.align='center'}
 tree <- rpart(label ~ ., data, method = "class")
 fancyRpartPlot(tree)
 ```
