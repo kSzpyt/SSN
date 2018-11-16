@@ -1,0 +1,194 @@
+---
+title: "Sztuczne Sieci Neuronowe"
+author: "Karol Szpyt"
+date: "16 listopada 2018"
+output: html_document
+---
+Tematem projektu jest budowa sieci neuronowej.  OPIS!!!!!!!!!!!!!!!!!
+
+Ładujemy potrzebne biblioteki
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+library(neuralnet)
+library(nnet)
+library(rpart)
+library(rattle)
+library(rpart.plot)
+library(RColorBrewer)
+```
+Nasze dane opierają się na pomiarach właściwości geometrycznych nasion (ziaren) należących do trzech różnych odmian pszenicy. Do skonstruowania wszystkich siedmiu atrybutów o rzeczywistych wartościach zostały wykorzystane technika rentgenowska i pakiet GRAINS. 
+Informacje o zestawie danych:
+Badaną grupę stanowiły ziarna należące do trzech różnych odmian pszenicy: Kama, Rosa i Canadian, każda po 70 elementów, losowo wybranych do eksperymentu. Wysokiej jakości wizualizacja wewnętrznej struktury nasiona została wykryta za pomocą techniki rentgenowskiej. Jest ona nieniszcząca (dla nasion) i znacznie tańsza niż inne, bardziej wyrafinowane techniki obrazowania, takie jak np. technologia laserowa. Obrazy rejestrowano na płytach rentgenowskich KODAK o wymiarach: 13x18 cm. Badania przeprowadzono przy użyciu ziaren pszenicy zebranych z pól doświadczalnych, zbadanych w Instytucie Agrofizyki Polskiej Akademii Nauk w Lublinie.
+Zestaw danych można wykorzystać do zadań klasyfikacji i analizy skupień(grupowania).
+
+Aby skonstruować dane, zmierzono siedem parametrów geometrycznych ziarna pszenicy. Atrybuty:
+
+1.	Obszar A,
+2.	Obwód B,
+3.	Zwartość C = 4 \*\ pi \*\ A / P ^ 2,
+4.	Długość ziarna,
+5.	Szerokość ziarna,
+6.	Współczynnik asymetrii,
+7.	Długość rowka ziarna.
+Wszystkie z powyższych parametrów były wartościowane w sposób ciągły.
+
+Następnie wczytujemy dane, na których będziemy pracować
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+data <- read.table("seeds.txt", sep = "\t")
+names(data) <- c("area_A", 
+                 "perimeter_P", 
+                 "compactness_C", 
+                 "length_of_kernel", 
+                 "width_of_kernel", 
+                 "asymmetry_coefficient", 
+                 "length_of_kernel_groove", 
+                 "label"
+)
+```
+
+Rozdzielamy zmienną"label" na 3 zmienne binarne i standaryzujemy dane, aby były wartościami od 0 do 1. Następnie dbamy o wymieszanie naszych danych, aby się nie powtarzały. Kolejnym krokiem jest utworzenie formuły do wykorzystanie funkcji *neuralnet*
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+#Rozdzielanie zmiennej "label"
+train <- cbind(data[, 1:7], class.ind(as.factor(data$label)))
+names(train) <- c(names(data)[1:7],"K", "R", "C")
+
+#Standaryzacja danych, aby były wartościami od 0 do 1 
+maximum<-apply(train[,1:7], 2, max)
+minimum<-apply(train[,1:7], 2, min)
+train2 <- as.data.frame(scale(train[, 1:7], center = minimum,scale=maximum-minimum))
+train <- cbind(train2, train[,8:10])
+
+#Powodujemy wymieszanie danych
+train <- train[sample(1:210, 210),]
+
+#tworzymy formułę
+n <- names(train)
+f <- as.formula(paste("K + R + C ~", paste(n[!n %in% c("K", "R", "C")], collapse = " + ")))
+f
+outs <- NULL
+```
+
+Kolejnym krokiem jest stworzenie funkcji *foo*, która tworzy sieć, a następnie każdorazowo sprawdza jej skuteczność. Za każdym razem tworzy również sieci, działające na innych danych trenujących/testowych (walidacja krzyżowa). Domyślnie dana funkcja posiada 3 neurony w pierwszej warstwie i 4 neurony w drugiej warstwie. Walidacja krzyżowa zawsze będzie w proporcjach **dane trenujące : dane testowe** (n - 1) : 1. Domyślnie jest to proporcja 5:1. 
+  
+  Funkcja *foo* pozwala nam na zmianę parametrów takich jak liczba neuronów, funkcja aktywacji.
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+foo <- function(x = c(3, 4), fct = "logistic", n = 6)
+{
+  #walidacja krzyżowa
+  for(i in 1:n)
+  {
+    index <- (((i-1) * round((1/n)*nrow(train))) + 1):((i*round((1/n) * nrow(train))))
+    train_cv <- train[index, ]
+    test_cv <- train[-index, ]
+    nn_cv <- neuralnet(f,
+                       data = train_cv,
+                       hidden = x,
+                       act.fct = fct,
+                       linear.output = FALSE)
+    
+    
+    pr.nn <- compute(nn_cv, test_cv[, 1:7])
+    pr.nn_ <- pr.nn$net.result
+    
+    original_values <- max.col(test_cv[, 8:10])
+    pr.nn_2 <- max.col(pr.nn_)
+    outs[i] <- mean(pr.nn_2 == original_values)
+  }
+  a <- mean(outs)
+  return(a)
+}
+```
+
+Sprawdźmy skuteczność naszej sieci przy domyślnych parametrach
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+foo()
+```
+
+funkcja obliczająca skutecznosć sieci w zależności od konfiguracji neuronów
+```{r}
+config <- function(y)
+{
+  a <- NULL
+  for (x in 1:dim(y)[1]) {
+    a[x] <- foo(y[x,])
+  }
+  return(a)
+}
+
+```
+
+maksik dla jednej warstwy
+```{r}
+k <- NULL
+for (x in 1:100) {
+  k[x] <- foo(x)
+}
+k
+plot(k, type = "l")
+which(k == max(k))
+```
+dla dwoch warst 
+```{r}
+kk <- expand.grid(1:25, 1:25)
+ii <- sample(1:dim(kk)[1], 10)
+kk <- kk[ii,]
+kk <- cbind(kk, config(kk))
+rownames(kk) <- 1:10
+names(kk) <- c("1st", "2nd", "skuteczność")
+kk
+```
+dla trzech warst
+```{r}
+kk <- expand.grid(1:25, 1:25, 1:25)
+ii <- sample(1:dim(kk)[1], 10)
+kk <- kk[ii,]
+kk <- cbind(kk, config(kk))
+rownames(kk) <- 1:10
+names(kk) <- c("1st", "2nd", "3nd", "skuteczność")
+kk
+```
+dla czterech warst
+```{r}
+kk <- expand.grid(1:25, 1:25, 1:25, 1:25)
+ii <- sample(1:dim(kk)[1], 10)
+kk <- kk[ii,]
+kk <- cbind(kk, config(kk))
+rownames(kk) <- 1:10
+names(kk) <- c("1st", "2nd", "3nd", "4th", "skuteczność")
+kk
+```
+dla pięciu warst
+```{r}
+kk <- expand.grid(1:25, 1:25, 1:25, 1:25, 1:25)
+ii <- sample(1:dim(kk)[1], 10)
+kk <- kk[ii,]
+kk <- cbind(kk, config(kk))
+rownames(kk) <- 1:10
+names(kk) <- c("1st", "2nd", "3nd", "4th", "5th", "skuteczność")
+kk
+```
+
+
+
+
+
+
+
+```{r, fig.align='center'}
+tree <- rpart(label ~ ., data, method = "class")
+fancyRpartPlot(tree)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
