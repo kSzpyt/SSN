@@ -48,7 +48,23 @@ names(data) <- c("area_A",
                  "label"
 )
 ```
+Szybkie spojrzenie na dane na poglądowych wykresach
+```{r include=FALSE}
+attach(data)
+```
 
+```{r fig.align='center'}
+par(mfrow = c(2, 3))
+plot(length_of_kernel ~ perimeter_P, col = label)
+plot(compactness_C ~ length_of_kernel, col = label)
+plot(width_of_kernel ~ asymmetry_coefficient, col = label)
+plot(length_of_kernel_groove ~ area_A, col = label)
+plot(width_of_kernel ~ perimeter_P, col = label)
+plot(length_of_kernel_groove ~ asymmetry_coefficient, col = label)
+```  
+Ewidentnie widać podział na grupy. Sieć powinna mieć wysoką skuteczność. 
+
+##Przygotowanie danych
 Rozdzielamy zmienną "label" na 3 zmienne binarne i standaryzujemy dane, aby były wartościami od 0 do 1.  
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
 #Rozdzielanie zmiennej "label"
@@ -135,7 +151,7 @@ a <- c(which(k == max(k)), max(k))
 names(a) <- c("liczba neuronów", "skuteczność")
 a
 ```
-```{r}
+```{r fig.align='center'}
 plot(k, type = "l")
 ```
 
@@ -183,7 +199,22 @@ names(kk) <- c("1st", "2nd", "3nd", "4th", "5th", "skuteczność")
 w5 <- kk
 w5
 ```
-Poniżej wyświetlone jest drzewo decyzyjne
+##Skuteczność.
+(to przy pierwszym spr skuteczności po funkcji foo)
+Przy domyślnych parametrach skuteczność sieci wynosi 90%. Jest to wysoki poziom, jednak zobaczymy, czy zwiększy się on przy zmianie neuronów lub warstw.
+(po zmianie neuronow)
+Przy jednej warstwie ukrytej i liczbie neuronów od 1 do 100, zauważamy wzrost skuteczności do 92,95%. 
+(zmiana liczby neuronow na dwóch warst)
+Skuteczność waha się pomiędzy 76%, które jest najniższym wynikiem, a 92,1%. 
+(3 warstwy)
+Analogiczna sytacja, jednak dla 3 warstw. Najniższa skuteczność to 74,1%, a najwyższa to 91,43%. 
+(4 warstwy)
+Analogiczna sytuacja, 4 warstwy. Najniższa skuteczność 87,81%, a najwyższa to 91,33%.
+(5 warstw)
+Analogiczna sytuacja, 5 warstw. Najniższa skuteczność 84,1%, a najwyższa to 90,86%.  
+  
+##Drzewo decyzyjne
+Poniżej wyświetlone jest drzewo decyzyjne.
 ```{r, fig.align='center'}
 tree <- rpart(label ~ ., data, method = "class")
 fancyRpartPlot(tree)
