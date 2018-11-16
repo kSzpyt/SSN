@@ -8,7 +8,7 @@ library(nnet)
 http://archive.ics.uci.edu/ml/datasets/seeds?fbclid=IwAR2M-BNinAA7kSe2h8GebuKJ02nGYjzSU3FwKtQmXrmltDZY2NQQODffJmA
 +++
   
-  ```{r}
+```{r}
 data <- read.table("seeds.txt", sep = "\t")
 names(data) <- c("area_A", 
                  "perimeter_P", 
@@ -45,12 +45,12 @@ foo(c(3, 4))
 sieć odpali się z 3 neuronami w pierwszej warstwie i 4 neuronami w drugiej warstwie
 ```{r}
 #wartości domyślne c(3,4) jako neurony oraz logistic jako funkcja aktywacji 
-xd <- function(x = c(3, 4), fct = "logistic")
+foo <- function(x = c(3, 4), fct = "logistic", n = 6)
 {
   #ten for to walidacja krzyżowa
-  for(i in 1:6)
+  for(i in 1:n)
   {
-    index <- (((i-1) * round((1/6)*nrow(train))) + 1):((i*round((1/6) * nrow(train))))
+    index <- (((i-1) * round((1/n)*nrow(train))) + 1):((i*round((1/n) * nrow(train))))
     train_cv <- train[index, ]
     test_cv <- train[-index, ]
     nn_cv <- neuralnet(f,
