@@ -1,14 +1,21 @@
+---
+title: "Sztuczne Sieci Neuronowe"
+author: "Karol Szpyt"
+date: "16 listopada 2018"
+output: html_document
+---
+Tematem projektu jest budowa sieci neuronowej.  OPIS!!!!!!!!!!!!!!!!!
 
-```{r}
+Ładujemy potrzebne biblioteki
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 library(neuralnet)
 library(nnet)
+library(ggplot2)
 ```
-+++
-  tutaj opis danych
-http://archive.ics.uci.edu/ml/datasets/seeds?fbclid=IwAR2M-BNinAA7kSe2h8GebuKJ02nGYjzSU3FwKtQmXrmltDZY2NQQODffJmA
-+++
-  
-```{r}
+tutaj opis danych AGI!!!!!!!!!!!!!!!!!!
+
+Następnie wczytujemy dane, na których będziemy pracować
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 data <- read.table("seeds.txt", sep = "\t")
 names(data) <- c("area_A", 
                  "perimeter_P", 
@@ -19,35 +26,37 @@ names(data) <- c("area_A",
                  "length_of_kernel_groove", 
                  "label"
 )
-head(data)
 ```
-rozdzielamy zmienna "label" na 3 zmienne binarne
-```{r}
+
+Rozdzielamy zmienną"label" na 3 zmienne binarne i standaryzujemy dane, aby były wartościami od 0 do 1. Następnie dbamy o wymieszanie naszych danych, aby się nie powtarzały. Kolejnym krokiem jest utworzenie formuły do wykorzystanie funkcji *neuralnet*
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+#Rozdzielanie zmiennej "label"
 train <- cbind(data[, 1:7], class.ind(as.factor(data$label)))
 names(train) <- c(names(data)[1:7],"K", "R", "C")
+
+#Standaryzacja danych, aby były wartościami od 0 do 1 
 maximum<-apply(train[,1:7], 2, max)
 minimum<-apply(train[,1:7], 2, min)
 train2 <- as.data.frame(scale(train[, 1:7], center = minimum,scale=maximum-minimum))
 train <- cbind(train2, train[,8:10])
-train <- train[sample(1:210, 210),]
-```
 
-```{r}
+#Powodujemy wymieszanie danych
+train <- train[sample(1:210, 210),]
+
+#tworzymy formułę
 n <- names(train)
 f <- as.formula(paste("K + R + C ~", paste(n[!n %in% c("K", "R", "C")], collapse = " + ")))
 f
 outs <- NULL
 ```
 
-funckja gdzie pod x wstawiamy konfiguracje neuronów w warstwie ukrytej
-np
-foo(c(3, 4))
-sieć odpali się z 3 neuronami w pierwszej warstwie i 4 neuronami w drugiej warstwie
-```{r}
-#wartości domyślne c(3,4) jako neurony oraz logistic jako funkcja aktywacji 
+Kolejnym krokiem jest stworzenie funkcji *foo*, która tworzy sieć, a następnie każdorazowo sprawdza jej skuteczność. Za każdym razem tworzy również sieci, działające na innych danych trenujących/testowych (walidacja krzyżowa). Domyślnie dana funkcja posiada 3 neurony w pierwszej warstwie i 4 neurony w drugiej warstwie. Walidacja krzyżowa zawsze będzie w proporcjach **dane trenujące : dane testowe** (n - 1) : 1. Domyślnie jest to proporcja 5:1. 
+  
+  Funkcja *foo* pozwala nam na zmianę parametrów takich jak liczba neuronów, funkcja aktywacji.
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 foo <- function(x = c(3, 4), fct = "logistic", n = 6)
 {
-  #ten for to walidacja krzyżowa
+  #walidacja krzyżowa
   for(i in 1:n)
   {
     index <- (((i-1) * round((1/n)*nrow(train))) + 1):((i*round((1/n) * nrow(train))))
@@ -72,7 +81,29 @@ foo <- function(x = c(3, 4), fct = "logistic", n = 6)
 }
 ```
 
-```{r}
-foo(c(4,3))
+Sprawdźmy skuteczność naszej sieci przy domyślnych parametrach
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+foo()
 ```
+
+
+
+```{r}
+tree <- rpart(label ~ ., data, method = "class")
+fancyRpartPlot(tree)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
