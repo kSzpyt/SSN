@@ -103,6 +103,66 @@ Sprawdźmy skuteczność naszej sieci przy domyślnych parametrach
 foo()
 ```
 
+funkcja obliczająca skutecznosć sieci w zależności od konfiguracji neuronów
+```{r}
+config <- function(y)
+{
+  a <- NULL
+  for (x in 1:dim(y)[1]) {
+    a[x] <- foo(y[x,])
+  }
+  return(a)
+}
+
+```
+
+maksik dla jednej warstwy
+```{r}
+k <- NULL
+for (x in 1:100) {
+  k[x] <- foo(x)
+}
+k
+plot(k, type = "l")
+which(k == max(k))
+```
+dla dwoch warst 
+```{r}
+kk <- expand.grid(1:25, 1:25)
+ii <- sample(1:dim(kk)[1], 10)
+kk <- kk[ii,]
+kk <- cbind(kk, config(kk))
+kk
+```
+dla trzech warst
+```{r}
+kk <- expand.grid(1:25, 1:25, 1:25)
+ii <- sample(1:dim(kk)[1], 10)
+kk <- kk[ii,]
+kk <- cbind(kk, config(kk))
+kk
+```
+dla czterech warst
+```{r}
+kk <- expand.grid(1:25, 1:25, 1:25, 1:25)
+ii <- sample(1:dim(kk)[1], 10)
+kk <- kk[ii,]
+kk <- cbind(kk, config(kk))
+kk
+```
+dla pięciu warst
+```{r}
+kk <- expand.grid(1:25, 1:25, 1:25, 1:25, 1:25)
+ii <- sample(1:dim(kk)[1], 10)
+kk <- kk[ii,]
+kk <- cbind(kk, config(kk))
+kk
+```
+
+
+
+
+
 
 
 ```{r, fig.align='center'}
